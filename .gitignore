@@ -1,6 +1,6 @@
 phone_numbers.txt
 twilio_api.txt
-.ipynb_checkpoints/*
+*.ipynb_checkpoints/*
 
 #####################
 # standard ignores
@@ -45,3 +45,4 @@ twilio_api.txt
 .Trashes
 ehthumbs.db
 Thumbs.db
+*-checkpoint.ipynb
