@@ -46,3 +46,5 @@ twilio_api.txt
 ehthumbs.db
 Thumbs.db
 *-checkpoint.ipynb
+pytest/__pycache__
+pytest/.cache/v/cache
