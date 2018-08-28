@@ -1,5 +1,7 @@
 import tkinter as tk
 
+
+
 class MakeEnv:
 
     def __init__(self, state=[[None, None, None],[None, None, None],[None,None,None]]):
@@ -76,8 +78,6 @@ class MakeEnv:
         self.draw_and_set_game_state()
 
 
-
-
     def get_aviailable_moves(self):
         self.available_moves = []
         for x in range(3):
@@ -104,5 +104,5 @@ class MakeEnv:
 
 
 if __name__=='__main__':
-    state = [['X', 'O', 'O'],['O', 'O', 'X'],['X','O','O']]
+    state = [['X', 'O', None],['O', 'O', None],['X','O','X']]
     env = MakeEnv(state)
