@@ -48,3 +48,4 @@ Thumbs.db
 *-checkpoint.ipynb
 pytest/__pycache__
 pytest/.cache/v/cache
+python_machine_learning/__pycache__
