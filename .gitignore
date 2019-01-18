@@ -49,3 +49,7 @@ Thumbs.db
 pytest/__pycache__
 pytest/.cache/v/cache
 python_machine_learning/__pycache__
+iris.data
+python_machine_learning/aclImdb
+*.csv
+*.pyc
