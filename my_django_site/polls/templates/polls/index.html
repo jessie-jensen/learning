@@ -1,0 +1,16 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
+
+<h1>Recent Polls</h1>
+
+{% if latest_question_l %}
+<ul>
+    {% for question in latest_question_l %}
+    <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_s }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No polls are available.</p>
+{% endif %}
+<img src="http://cypp.rutgers.edu/wp-content/uploads/2013/07/business-poll-survey2-2401.jpg">
