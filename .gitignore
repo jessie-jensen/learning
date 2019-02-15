@@ -53,3 +53,4 @@ iris.data
 python_machine_learning/aclImdb
 *.csv
 *.pyc
+python_machine_learning/mnist
