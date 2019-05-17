@@ -22,7 +22,7 @@ EPSILON_DECAY_STEPS = 500*1000
 EPISODES = 800
 BATCH_SIZE = 48
 INPUT_SHAPE = (None, 88, 80, 1)
-LEARN_RATE = 0.001
+LEARN_RATE = 0.002
 DISCOUNT = 0.97
 
 GLOBAL_STEP = 0
@@ -32,7 +32,8 @@ START_STEPS = 2000
 
 BUFFER_LEN = 20*1000
 
-LOGDIR = 'logs'
+LOG_DIR = './logs'
+MODEL_PATH = './model.ckpt'
 
 
 #
@@ -172,7 +173,10 @@ optimizer = tf.train.AdamOptimizer(LEARN_RATE).minimize(loss)
 # log
 loss_summary = tf.summary.scalar('LOSS', loss)
 merge_summary = tf.summary.merge_all()
-file_writer = tf.summary.FileWriter(LOGDIR, tf.get_default_graph())
+file_writer = tf.summary.FileWriter(LOG_DIR, tf.get_default_graph())
+
+# checkpoint model
+saver = tf.train.Saver()
 
 
 # run session & episodes
@@ -181,6 +185,7 @@ init_op = tf.global_variables_initializer()
 
 with tf.Session() as sess:
     init_op.run()
+    t0 = dt.datetime.now()
 
     # episode
     for episode in range(EPISODES):
@@ -191,8 +196,8 @@ with tf.Session() as sess:
         actions_counter = Counter()
 
         while not done:
-            if (episode+1 % 25 == 0) or (episode == 0):
-                env.render()
+            # if (episode+1 % 25 == 0) or (episode == 0):
+                # env.render()
 
             # preprocess screen
             state = preprocess_obs(obs)
@@ -240,13 +245,20 @@ with tf.Session() as sess:
                                             in_training_mode:True})
                 episodic_loss.append(train_loss)
             
-            # copy main q to target q at step intervals
+            # copy & save main q to target q at step intervals
             if ((GLOBAL_STEP+1) % COPY_STEPS == 0) and (GLOBAL_STEP > START_STEPS):
                 copy_target_to_main.run()
+                saver.save(sess, MODEL_PATH)
             
             # intra-step updates
             obs = next_obs
             GLOBAL_STEP += 1
             episodic_reward += reward
 
-        print('EPISODE: {}\tTOTAL ACTIONS: {}\tGLOBAL STEPS: {}\tMEAN LOSS: {}\tTOTAL REWARD: {}'.format(episode+1, sum(actions_counter.values()), GLOBAL_STEP, np.mean(episodic_loss), episodic_reward))
+        print('EPISODE: {}\tACTIONS: {}\tGLOBAL STEPS: {}\tGLOBAL TIME: {}\tMEAN LOSS: {}\tTOTAL REWARD: {}'.format(
+                                episode+1, 
+                                sum(actions_counter.values()), 
+                                GLOBAL_STEP, 
+                                dt.datetime.now() - t0,
+                                np.mean(episodic_loss), 
+                                episodic_reward))
