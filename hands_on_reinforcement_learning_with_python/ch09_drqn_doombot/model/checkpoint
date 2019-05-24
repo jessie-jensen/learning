@@ -1,0 +1,2 @@
+model_checkpoint_path: "drqn_doombot.ckpt"
+all_model_checkpoint_paths: "drqn_doombot.ckpt"
