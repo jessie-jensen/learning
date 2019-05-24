@@ -372,7 +372,7 @@ def train(episodes, episode_len, learning_rate, scenario='deathmatch.cfg', scena
             total_reward = 0
             total_loss = 0
 
-            if (episode % save_freq) == 0:
+            if (episode % save_freq) == 0 and episode > 100:
                 sp = saver.save(sess, './model/drqn_doombot.ckpt')
                 print('DRQN SAVED TO:{}\ttotal train time: {}'.format(sp,
                     dt.datetime.now() - t0))
@@ -388,4 +388,4 @@ if __name__ == "__main__":
         episode_len=300,
         learning_rate=0.01,
         scenario_dir='/Users/jj/anaconda3/lib/python3.6/site-packages/vizdoom/scenarios/',
-        render=False)
+        render=True)
