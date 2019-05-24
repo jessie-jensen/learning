@@ -19,11 +19,16 @@ EPSILON_MIN = 0.05
 EPSILON_MAX = 1.0
 EPSILON_DECAY_STEPS = 500*1000
 
-EPISODES = 800
+EPISODES = 1500
 BATCH_SIZE = 48
 INPUT_SHAPE = (None, 88, 80, 1)
-LEARN_RATE = 0.002
 DISCOUNT = 0.97
+
+LEARN_RATE_INIT = 0.05
+current_learn_rate = LEARN_RATE_INIT
+LEARN_RATE_MIN =  0.0001
+LEARN_RATE_STEP_PERCENT = 50*1000
+
 
 GLOBAL_STEP = 0
 COPY_STEPS = 100
@@ -168,7 +173,8 @@ copy_target_to_main = tf.group(*copy_op)
 loss = tf.reduce_mean(tf.square(y - Q_action)) 
 
 # optimizer
-optimizer = tf.train.AdamOptimizer(LEARN_RATE).minimize(loss)
+learn = tf.placeholder(tf.float32)
+optimizer = tf.train.AdamOptimizer(learn).minimize(loss)
 
 # log
 loss_summary = tf.summary.scalar('LOSS', loss)
@@ -238,10 +244,13 @@ with tf.Session() as sess:
                 file_writer.add_summary(mrg_summary, GLOBAL_STEP)
 
                 # train
+                current_learn_rate = max(LEARN_RATE_INIT - ((GLOBAL_STEP / LEARN_RATE_STEP_PERCENT) / 100),
+                                        LEARN_RATE_MIN)
                 train_loss, _ = sess.run([loss, optimizer],
                                         feed_dict={X:o_state,
                                             y:np.expand_dims(y_batch, axis=-1),
                                             X_action:o_action,
+                                            learn:current_learn_rate,
                                             in_training_mode:True})
                 episodic_loss.append(train_loss)
             
@@ -255,10 +264,11 @@ with tf.Session() as sess:
             GLOBAL_STEP += 1
             episodic_reward += reward
 
-        print('EPISODE: {}\tACTIONS: {}\tGLOBAL STEPS: {}\tGLOBAL TIME: {}\tMEAN LOSS: {}\tTOTAL REWARD: {}'.format(
+        print('EPISODE: {}\tACTIONS: {}\tGLOBAL STEPS: {}\tGLOBAL TIME: {}\tLEARN RATE: {}\tMEAN LOSS: {}\tTOTAL REWARD: {}'.format(
                                 episode+1, 
                                 sum(actions_counter.values()), 
                                 GLOBAL_STEP, 
                                 dt.datetime.now() - t0,
+                                current_learn_rate,
                                 np.mean(episodic_loss), 
                                 episodic_reward))
